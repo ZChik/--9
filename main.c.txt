@@ -1,77 +1,77 @@
 #define _CRT_SECURE_NO_WARNINGS 
 #include <stdio.h> 
-#define MAXLINE 1024 
 #define YES 1 
 #define NO 0 
-int main()
-{
-	FILE *fpin;//входной файл 
-	FILE *fpout;//выходной файл 
-	char line[MAXLINE];//текущая строка 
-	char *buf_ptr;//указатель на адрес обрабатываемого элемента строки 
-	char *start_ptr;//указатель на адрес элемента начала слова 
-	char *stop_ptr;//указатель на адрес элемента конца слова 
-	char *prev_start_ptr;//указатель на адрес элемента начала предыдущего слова 
-	char *prev_stop_ptr;//указатель на адрес элемента конца предыдущего слова 
-	int flag;//в слове или нет обрабатываемый элемент 
-	prev_stop_ptr = prev_start_ptr = start_ptr = stop_ptr = buf_ptr = 0;
-	flag = NO;
+#define MAXLINE 1000 
+#define gets(s) fgets((s),sizeof(s),stdin) 
 
-	fpin = fopen("test.txt", "rt");//открываем файл для чтения 
-	if (!fpin)//ошибка при открытии файла 
-		return 1;
+int main() 
+{ 
+FILE *fpin; 
+FILE *fpout; 
+char line[MAXLINE]; 
+char *start_ptr;//СѓРєР°Р·Р°С‚РµР»СЊ РЅР° Р°РґСЂРµСЃ СЌР»РµРјРµРЅС‚Р° РЅР°С‡Р°Р»Р° СЃР»РѕРІР° 
+char *stop_ptr;//СѓРєР°Р·Р°С‚РµР»СЊ РЅР° Р°РґСЂРµСЃ СЌР»РµРјРµРЅС‚Р° РєРѕРЅС†Р° СЃР»РѕРІР° 
+char *prev_start_ptr;//СѓРєР°Р·Р°С‚РµР»СЊ РЅР° Р°РґСЂРµСЃ СЌР»РµРјРµРЅС‚Р° РЅР°С‡Р°Р»Р° РїСЂРµРґС‹РґСѓС‰РµРіРѕ СЃР»РѕРІР° 
+char *prev_stop_ptr;//СѓРєР°Р·Р°С‚РµР»СЊ РЅР° Р°РґСЂРµСЃ СЌР»РµРјРµРЅС‚Р° РєРѕРЅС†Р° РїСЂРµРґС‹РґСѓС‰РµРіРѕ СЃР»РѕРІР° 
+char *ptr = NULL;//СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РґР°РЅРЅСѓСЋ СЃС‚СЂРѕРєСѓ 
+int flag =NO; 
 
-	fpout = fopen("result.txt", "wt");//открываем файл для записи 
-	if (!fpout)//ошибка при открытии файла 
-		return 1;
+if ((fpin = fopen("input.txt", "rt")) == NULL) 
+return 1; 
+if ((fpout = fopen("output.txt", "wt")) == NULL) 
+return 2; 
 
-	while (!feof(fpin))// цикл до конца входного файла 
-	{
-		fscanf(fpin, "%s%^[\n]", line);
-		buf_ptr = line;
-		if (buf_ptr == NULL)
-			break;//файл исчерпан 
-		while (*buf_ptr != '\0')//цикл до конца строки 
-		{
-			do
-			{
-				if ((*buf_ptr<'a' || *buf_ptr>'z') && (*buf_ptr<'A' || *buf_ptr>'Z'))
-				{
-					if (flag == YES)
-					{
-						stop_ptr = buf_ptr - 1;
+while (!feof(fpin)) 
+{ 
+if ((ptr = fgets(line, MAXLINE, fpin)) != NULL) 
+{ 
+start_ptr = stop_ptr = prev_start_ptr = prev_stop_ptr = ptr; 
+flag = NO; 
 
-						flag = NO;
-					}
-				}
-				else
-				{
-					if (flag == NO)
-					{
-						prev_stop_ptr = stop_ptr;//запоминаем адрес конца предыдущего слова 
-						prev_start_ptr = start_ptr;//запоминаем адрес начала предыдущего слова 
+do 
+{ 
+if ((*ptr < 'a' || *ptr > 'z') && (*ptr < 'A' || *ptr > 'Z'))//РІСЃС‚СЂРµС‡РµРЅ СЂР°Р·РґРµР»РёС‚РµР»СЊ 
+{ 
+if (flag == YES) 
+{ 
+stop_ptr = ptr - 1; 
 
-						start_ptr = buf_ptr;
+flag = NO; 
+} 
+} 
+else 
+{ 
+if (flag == NO) 
+{ 
+prev_stop_ptr = stop_ptr;//Р·Р°РїРѕРјРёРЅР°РµРј Р°РґСЂРµСЃ РєРѕРЅС†Р° РїСЂРµРґС‹РґСѓС‰РµРіРѕ СЃР»РѕРІР° 
+prev_start_ptr = start_ptr;//Р·Р°РїРѕРјРёРЅР°РµРј Р°РґСЂРµСЃ РЅР°С‡Р°Р»Р° РїСЂРµРґС‹РґСѓС‰РµРіРѕ СЃР»РѕРІР°. 
 
-						flag = YES;
-					}
-				}
+start_ptr = ptr; 
 
-				buf_ptr++;
-			} while (*buf_ptr != '\0');
-			prev_stop_ptr += 1;
-			while (*prev_start_ptr != '\0')
-			{
-				*prev_start_ptr = *prev_stop_ptr;
-				prev_stop_ptr++;
-				prev_start_ptr++;
-			}
-			*prev_stop_ptr = '\0';
-		}
-		fprintf(fpout, "%s%^[\n]", line);
-	}
-	fclose(fpin);//закрыть входной файл 
-	fclose(fpout);//закрыть выходной файл 
-	printf("prog done\n");
-	return 0;
+flag = YES; 
+} 
+} 
+
+
+ptr++; 
+
+} while (*ptr != '\0'); 
+
+//СѓРґР°Р»РµРЅРёРµ РїСЂРµРґРїРѕСЃР»РµРґРЅРµРіРѕ СЃР»РѕРІР° 
+prev_stop_ptr += 1; 
+
+for (; *prev_start_ptr != '\0'; prev_start_ptr++) 
+{ 
+*prev_start_ptr = *prev_stop_ptr; 
+prev_stop_ptr++; 
+} 
+*prev_stop_ptr = '\0'; 
+} 
+
+fputs(line, fpout); 
+} 
+fclose(fpin); 
+fclose(fpout); 
+return 0; 
 }
