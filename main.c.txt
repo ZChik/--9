@@ -16,6 +16,7 @@ char *prev_start_ptr;//указатель на адрес элемента на�
 char *prev_stop_ptr;//указатель на адрес элемента конца предыдущего слова 
 char *ptr = NULL;//указатель на данную строку 
 int flag =NO; 
+int count_word = 0; 
 
 if ((fpin = fopen("input.txt", "rt")) == NULL) 
 return 1; 
@@ -24,6 +25,7 @@ return 2;
 
 while (!feof(fpin)) 
 { 
+count_word = 0; 
 if ((ptr = fgets(line, MAXLINE, fpin)) != NULL) 
 { 
 start_ptr = stop_ptr = prev_start_ptr = prev_stop_ptr = ptr; 
@@ -46,7 +48,7 @@ if (flag == NO)
 { 
 prev_stop_ptr = stop_ptr;//запоминаем адрес конца предыдущего слова 
 prev_start_ptr = start_ptr;//запоминаем адрес начала предыдущего слова. 
-
+count_word++; 
 start_ptr = ptr; 
 
 flag = YES; 
@@ -59,6 +61,8 @@ ptr++;
 } while (*ptr != '\0'); 
 
 //удаление предпоследнего слова 
+if (count_word >= 2) 
+{ 
 prev_stop_ptr += 1; 
 
 for (; *prev_start_ptr != '\0'; prev_start_ptr++) 
@@ -67,6 +71,7 @@ for (; *prev_start_ptr != '\0'; prev_start_ptr++)
 prev_stop_ptr++; 
 } 
 *prev_stop_ptr = '\0'; 
+} 
 } 
 
 fputs(line, fpout); 
